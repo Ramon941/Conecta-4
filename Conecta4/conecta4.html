@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect 4</title>
+    <link rel="stylesheet" href="conecta4.css">
+    <link rel="shortcut icon"
+        href="https://cdn0.iconfinder.com/data/icons/board-card-games-iconez/64/Connect-Four-512.png" />
+</head>
+
+<body>
+    <button>Limpiar tablero</button>
+    <div id="amarillo">
+        Victorias amarillo:<p id="contadoramarillo">0</p>
+    </div>
+
+    <div id="rojo">
+        Victorias rojo: <p id="contadorrojo">0</p>
+    </div>
+
+    <script>
+        //Asigna nombre de los jugadores
+        nombre = prompt("Indica al jugador del color amarillo");
+        nombre2 = prompt("Indica al jugador del color rojo");
+        //Crea al primer jugador
+        jugador = document.getElementById("amarillo");
+        jugador.textContent = nombre;
+        let contadoramarillo = document.createElement("p");
+        contadoramarillo.textContent = 0;
+        contadoramarillo.setAttribute("id", "contadoramarillo");
+        jugador.appendChild(contadoramarillo);
+        //Crea al segundo jugador
+        jugador2 = document.getElementById("rojo");
+        jugador2.textContent = nombre2;
+        let contadorrojo = document.createElement("p");
+        contadorrojo.textContent = 0;
+        contadorrojo.setAttribute("id", "contadorrojo");
+        jugador2.appendChild(contadorrojo);
+        //Crea la tabla
+        var tabla = document.createElement("table");
+        //Localiza el boton
+        var boton = document.getElementsByTagName("button");
+        var posicion;
+
+        //Crea el tablero
+        for (var f = 0; f < 6; f++) {
+            var fila = document.createElement("tr");//Crea las filas
+            for (var c = 0; c < 7; c++) {
+                var columna = document.createElement("td"); //Crea las columnas
+                columna.style.backgroundColor = "white"; //Da la propiedad de fondo blanco para la comparación de los colores
+                fila.appendChild(columna); //añade la columna a la fila
+            }
+            tabla.appendChild(fila); //añade la fila a la tabla
+        }
+        document.body.appendChild(tabla); //añade la tabla al HTML
+        tabla.setAttribute("class", "tabla"); //Le da clase "tabla" a la tabla creada
+        //Termina el codigo de pintar
+
+        var fila = document.getElementsByTagName("tr"); //Accede a la fila creada (matriz)
+        console.log(fila[0].childNodes);
+
+        for (let j = 0; j < fila[0].childNodes.length; j++) {
+            var contador = 0;
+            fila[0].childNodes[j].onclick = function () { //ChildNodes accede a los td de cada tr
+                
+                var colores = ['yellow', 'crimson']; //Array de colores para intercambiar entre ellos
+                var entrar = false; //Booleano que comprueba si introdujo ya una ficha para hacer el cambio de color
+                for (let t = 1; t <= fila[0].childNodes.length; t++) {
+                    posicion = j;
+                    if (fila[fila.length - t].childNodes[j].style.backgroundColor == "white" && entrar == false) {
+                        fila[fila.length - t].childNodes[j].style.backgroundColor = colores[contador];
+                        contador++; //Cambia de amarillo a rojo
+                        if (contador > 1) {
+                            contador = 0; //Cambia de rojo a amarillo
+                        }
+                        entrar = true;
+                    }
+                }
+            }
+            ganar();
+        }
+
+        //Función del botón
+        boton[0].onclick = function () {
+            resetear();
+        }
+
+
+        //Funciónes que comprueba quien gana
+
+        function coincidecolor(color1, color2, color3, color4) {//Compara los background
+            return (color1 == color2 && color1 === color3 && color1 === color4 && color1 !== 'white')
+        }
+
+        function horizontal() {
+            for (let i = 0; i < fila.length; i++) {
+                for (let t = 0; t < 4; t++) {
+                    if (coincidecolor(fila[i].children[t].style.backgroundColor, fila[i].children[t + 1].style.backgroundColor,
+                        fila[i].children[t + 2].style.backgroundColor, fila[i].children[t + 3].style.backgroundColor)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        function vertical() {
+            for (let i = 0; i < fila[0].childNodes.length; i++) {
+                for (let t = 0; t < 3; t++) {
+                    if (coincidecolor(fila[t].children[i].style.backgroundColor, fila[t + 1].children[i].style.backgroundColor,
+                        fila[t + 2].children[i].style.backgroundColor, fila[t + 3].children[i].style.backgroundColor)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        function diagonalIz() {
+            for (let i = 0; i < 4; i++) {
+                for (let t = 0; t < 3; t++) {
+                    if (coincidecolor(fila[t].children[i].style.backgroundColor, fila[t + 1].children[i + 1].style.backgroundColor,
+                        fila[t + 2].children[i + 2].style.backgroundColor, fila[t + 3].children[i + 3].style.backgroundColor)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        function diagonalDe() {
+            for (let i = 0; i < 4; i++) {
+                for (let t = 5; t > 2; t--) {
+                    if (coincidecolor(fila[t].children[i].style.backgroundColor, fila[t - 1].children[i + 1].style.backgroundColor,
+                        fila[t - 2].children[i + 2].style.backgroundColor, fila[t - 3].children[i + 3].style.backgroundColor)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        function resetear() {//Limpia el tablero
+            for (let i = 0; i < fila.length; i++) {
+                for (let t = 0; t < fila[i].childNodes.length; t++) {
+                    fila[i].childNodes[t].style.backgroundColor = "white";
+                }
+            }
+            if (contador == 0) {
+                alert("Le toca jugar a " + nombre)
+            } else {
+                alert("Le toca jugar a " + nombre2)
+            }
+        }
+
+        var ganar1;
+        function ganar() {
+            ganar1 = setInterval(comprobacion, 700);
+        }
+
+        function comprobacion() {
+            if (horizontal() || diagonalDe() || vertical() || diagonalIz()) {//Comprueba si algún color gano
+                if (contador == 0) {
+                    contadorrojo.textContent++;
+                    alert("Ha ganado esta ronda " + nombre2);
+                    resetear();
+                } else {
+                    contadoramarillo.textContent++;
+                    alert("Ha ganado esta ronda " + nombre);
+                    resetear();
+                }
+            }
+        }
+
+    </script>
+</body>
+
+</html>
